@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The FDE Journey — Two routes, one destination</title>
+<link rel="icon" href="assets/brand/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/png" href="assets/brand/favicon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+<style>
+:root{
+  --navy:#091F2C; --navy-2:#0c2634; --teal:#194449; --teal-2:#1f565c;
+  --ink:#EDF6F3; --mut:#9fb8b4; --mut-2:#7f9a96;
+  --lime:#D4EC8E; --lime-2:#b8d96a; --mint:#B9DCD2; --green:#34D399;
+  --blue:#60a5fa; --violet:#a78bfa; --orange:#dd6809; --rose:#fd8ea1;
+  --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.18);
+  --card:rgba(255,255,255,.055); --card-2:rgba(255,255,255,.085);
+  --r:16px; --font:"Segoe UI",Aptos,Calibri,-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:Consolas,"Courier New",Courier,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);background:var(--navy);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;line-height:1.18;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.eyebrow{display:block;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--lime);margin-bottom:14px}
+.sec-title{font-size:clamp(26px,3.3vw,38px);margin-bottom:14px}
+.sec-desc{font-size:16px;color:var(--mut);max-width:760px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--mint)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--lime);display:inline-block}
+.tag{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.t-must{background:var(--lime);color:var(--teal)}
+.t-rec{background:rgba(96,165,250,.16);color:var(--blue);border:1px solid rgba(96,165,250,.35)}
+.t-info{background:rgba(255,255,255,.07);color:var(--mut);border:1px solid var(--line)}
+.t-p1{background:rgba(52,211,153,.16);color:var(--green);border:1px solid rgba(52,211,153,.32)}
+.t-p2{background:rgba(96,165,250,.14);color:var(--blue);border:1px solid rgba(96,165,250,.3)}
+.t-p3{background:rgba(167,139,250,.14);color:var(--violet);border:1px solid rgba(167,139,250,.3)}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;padding:30px 0 90px}
+.glow{position:absolute;border-radius:50%;filter:blur(150px);pointer-events:none}
+.glow.a{top:-120px;right:12%;width:620px;height:620px;background:rgba(25,68,73,.55)}
+.glow.b{bottom:-80px;left:6%;width:460px;height:460px;background:rgba(212,236,142,.10)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;position:relative;z-index:3}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700}
+.brand .mk{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--lime),var(--mint));display:grid;place-items:center;color:var(--navy);font-weight:800;font-size:15px}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap}
+.nav-links a{font-size:13px;color:var(--mut);text-decoration:none;padding:7px 13px;border-radius:999px;border:1px solid transparent;transition:.15s}
+.nav-links a:hover{color:var(--ink);border-color:var(--line);background:var(--card)}
+.hero-grid{position:relative;z-index:2;display:grid;gap:44px;align-items:center;margin-top:18px}
+@media(min-width:960px){.hero-grid{grid-template-columns:1fr 320px}}
+.hero h1{font-size:clamp(38px,5.4vw,62px)}
+.hero h1 .ac{color:var(--lime)}
+.hero .sub{font-size:clamp(18px,2vw,22px);color:#cfe0dc;font-weight:500;margin-top:18px}
+.hero .lede{font-size:16px;color:var(--mut);margin-top:16px;max-width:620px}
+.hero-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:999px;font-weight:700;font-size:15px;font-family:inherit;border:none;cursor:pointer;text-decoration:none;transition:.18s}
+.btn-primary{background:var(--lime);color:var(--navy)}
+.btn-primary:hover{background:var(--lime-2);box-shadow:0 0 34px rgba(212,236,142,.3)}
+.btn-ghost{background:transparent;color:var(--lime);border:1px solid rgba(212,236,142,.45)}
+.btn-ghost:hover{background:rgba(212,236,142,.1)}
+.badge-stack{display:flex;justify-content:center}
+.badge-art{position:relative;width:300px;aspect-ratio:1;border-radius:24px;background:radial-gradient(circle at 50% 38%,rgba(212,236,142,.18),transparent 62%),linear-gradient(160deg,var(--teal),var(--navy));border:1px solid var(--line-2);display:grid;place-items:center;box-shadow:0 30px 60px rgba(0,0,0,.45)}
+.badge-art .ring{position:absolute;inset:26px;border:2px dashed rgba(212,236,142,.35);border-radius:50%;animation:spin 26s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.badge-core{position:relative;text-align:center;z-index:2}
+.badge-core .em{font-size:52px}
+.badge-core .t{font-weight:800;font-size:19px;letter-spacing:.02em;margin-top:6px}
+.badge-core .s{font-size:12px;color:var(--mint);text-transform:uppercase;letter-spacing:.18em;margin-top:3px}
+
+.note{display:flex;gap:12px;align-items:flex-start;margin-top:30px;padding:14px 18px;border-radius:12px;background:rgba(221,104,9,.09);border:1px solid rgba(221,104,9,.3);font-size:13.5px;color:#f1c9a4;max-width:760px;position:relative;z-index:2}
+.note b{color:#ffd9b5}
+
+/* SECTIONS */
+section{padding:72px 0;border-top:1px solid var(--line)}
+.s-navy{background:var(--navy)}
+.s-teal{background:var(--teal)}
+.s-deep{background:linear-gradient(180deg,var(--navy),#06161f)}
+.head{margin-bottom:40px}
+
+/* ANCHORS */
+.anchor-grid{display:grid;gap:22px}
+@media(min-width:820px){.anchor-grid{grid-template-columns:1fr 1fr}}
+.anchor{background:var(--card);border:1px solid var(--line-2);border-radius:var(--r);padding:28px;position:relative;overflow:hidden}
+.anchor:before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--lime)}
+.anchor .k{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.anchor .num{width:38px;height:38px;border-radius:11px;background:rgba(212,236,142,.14);border:1px solid rgba(212,236,142,.35);display:grid;place-items:center;font-size:20px}
+.anchor h3{font-size:21px}
+.anchor .role{font-size:13px;color:var(--lime);font-weight:600;margin-top:2px}
+.anchor p.d{font-size:14.5px;color:var(--mut);margin-top:12px}
+.anchor ul{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px}
+.anchor li{display:flex;gap:10px;font-size:13.5px;color:#d4e6e1}
+.anchor li .ck{color:var(--green);flex:none;font-weight:800}
+.chipline{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+.chip{font-size:11.5px;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--mint);font-family:var(--mono)}
+.minibar{display:inline-flex;align-items:center;gap:8px;margin-top:4px;padding:7px 15px;border-radius:999px;background:var(--lime);color:var(--teal);font-weight:800;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase}
+
+/* CREDLY DESTINATION */
+.credly{display:grid;gap:30px;align-items:center}
+@media(min-width:900px){.credly{grid-template-columns:300px 1fr}}
+.credly-badge{aspect-ratio:1;max-width:300px;border-radius:50%;background:radial-gradient(circle at 50% 40%,rgba(212,236,142,.22),transparent 60%),conic-gradient(from 210deg,var(--teal),var(--navy),var(--teal));border:1px solid var(--line-2);display:grid;place-items:center;text-align:center;box-shadow:0 26px 54px rgba(0,0,0,.5);margin:0 auto}
+.credly-badge .inner{width:72%;aspect-ratio:1;border-radius:50%;border:2px solid rgba(212,236,142,.4);display:grid;place-items:center;background:rgba(9,31,44,.5)}
+.credly-badge .em{font-size:46px}
+.credly-badge .t{font-weight:800;font-size:16px;margin-top:4px;padding:0 10px}
+.credly-badge .s{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin-top:4px}
+.ask{margin-top:22px;padding:18px 22px;border-radius:14px;background:rgba(212,236,142,.08);border:1px solid rgba(212,236,142,.28)}
+.ask .lbl{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--lime);margin-bottom:8px}
+.ask p{font-size:15px;color:#e6f1ec}
+.proof-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pc{font-size:11.5px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--mint);display:inline-flex;gap:7px;align-items:center}
+.pc .d{color:var(--lime)}
+
+/* ROUTES */
+.routes{display:grid;gap:20px}
+@media(min-width:820px){.routes{grid-template-columns:1fr 1fr}}
+.route{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px;transition:.2s}
+.route:hover{border-color:var(--line-2);background:var(--card-2)}
+.route .rh{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.route .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:21px}
+.route.tech .ic{background:rgba(96,165,250,.14);border:1px solid rgba(96,165,250,.3)}
+.route.func .ic{background:rgba(167,139,250,.14);border:1px solid rgba(167,139,250,.3)}
+.route h3{font-size:20px}
+.route .rl{font-size:12.5px;color:var(--mut);font-weight:600}
+.route p{font-size:14px;color:var(--mut);margin-top:12px}
+.route .dest{margin-top:16px;font-size:13px;display:flex;gap:9px;align-items:center;color:#d4e6e1}
+.route .dest b{color:var(--lime)}
+
+/* COMPETENCY SPINE */
+.dom-list{display:flex;flex-direction:column;gap:14px}
+.dom{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.2s}
+.dom.open{border-color:var(--line-2);background:var(--card-2)}
+.dom-head{display:flex;align-items:center;gap:16px;padding:20px 22px;cursor:pointer;user-select:none}
+.dom-head:hover{background:rgba(255,255,255,.03)}
+.dom-n{width:40px;height:40px;flex:none;border-radius:11px;background:var(--teal);border:1px solid var(--line-2);display:grid;place-items:center;font-weight:800;font-size:17px;color:var(--lime)}
+.dom-ti{flex:1;min-width:0}
+.dom-ti h3{font-size:17.5px}
+.dom-ti p{font-size:13px;color:var(--mut);margin-top:3px}
+.dom-meta{display:flex;align-items:center;gap:10px;flex:none}
+.chev{width:26px;height:26px;display:grid;place-items:center;color:var(--mut);transition:.25s;font-size:15px}
+.dom.open .chev{transform:rotate(180deg);color:var(--lime)}
+.dom-body{display:none;padding:0 22px 22px}
+.dom.open .dom-body{display:block}
+.dom-dest{padding:14px 16px;border-radius:11px;background:rgba(212,236,142,.07);border:1px solid rgba(212,236,142,.22);font-size:13.5px;color:#e6f1ec;margin-bottom:16px}
+.dom-dest b{color:var(--lime)}
+.split{display:grid;gap:12px}
+@media(min-width:720px){.split{grid-template-columns:1fr 1fr}}
+.lane{padding:15px 16px;border-radius:11px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.lane .lh{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.lane.func .lh{color:var(--violet)}
+.lane.tech .lh{color:var(--blue)}
+.lane p{font-size:13px;color:var(--mut-2);color:#b4ccc7}
+.lane .st{font-size:11.5px;color:var(--mut);font-style:italic;margin-bottom:7px}
+.dom-proof{margin-top:14px;padding:14px 16px;border-radius:11px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.22)}
+.dom-proof .lh{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.dom-proof p{font-size:13px;color:#cfe8e0}
+.dom-src{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.src{font-size:11px;font-family:var(--mono);padding:4px 9px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--mint)}
+
+/* HVE ENGINE */
+.pillars{display:grid;gap:16px;margin-bottom:34px}
+@media(min-width:720px){.pillars{grid-template-columns:repeat(3,1fr)}}
+.pillar{padding:22px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.pillar .em{font-size:28px}
+.pillar h4{font-size:16px;margin-top:10px}
+.pillar p{font-size:13px;color:var(--mut);margin-top:6px}
+.rpi{margin-top:10px}
+.rpi-track{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;margin-bottom:18px}
+.stage{flex:none;min-width:150px;padding:14px;border-radius:12px;background:var(--card);border:1px solid var(--line);position:relative}
+.stage .n{font-size:11px;font-weight:800;color:var(--lime);letter-spacing:.1em}
+.stage h4{font-size:14px;margin-top:5px}
+.stage p{font-size:11.5px;color:var(--mut);margin-top:6px}
+.stage .ph{font-size:10px;font-family:var(--mono);color:var(--mint);margin-top:7px;display:block}
+.stage.impl{border-color:rgba(212,236,142,.3)}
+.clearnote{font-size:12.5px;color:var(--mut);font-family:var(--mono);margin-bottom:22px;display:flex;gap:9px;align-items:center}
+.vs-table{width:100%;border-collapse:collapse;font-size:13.5px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.vs-table th,.vs-table td{padding:12px 15px;text-align:left;border-bottom:1px solid var(--line)}
+.vs-table th{background:rgba(255,255,255,.04);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mint)}
+.vs-table td:first-child{color:var(--mut);font-weight:600}
+.vs-table .hve{color:var(--lime)}
+.vs-table tr:last-child td{border-bottom:none}
+.fluency{display:grid;gap:12px;margin-top:26px}
+@media(min-width:720px){.fluency{grid-template-columns:repeat(4,1fr)}}
+.fl{padding:18px;border-radius:12px;background:var(--card);border:1px solid var(--line);position:relative}
+.fl .ms{font-size:11px;font-weight:800;color:var(--lime);letter-spacing:.08em}
+.fl h4{font-size:15px;margin-top:6px}
+.fl p{font-size:12px;color:var(--mut);margin-top:6px}
+
+/* HACKATHON */
+.hack-grid{display:grid;gap:18px}
+@media(min-width:820px){.hack-grid{grid-template-columns:1.2fr 1fr}}
+.hack-main{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:28px}
+.hack-main .big{font-size:clamp(26px,3vw,34px);font-weight:800;color:var(--lime);line-height:1.1}
+.hack-main p{font-size:14.5px;color:var(--mut);margin-top:14px}
+.sds{display:flex;flex-direction:column;gap:12px}
+.sd{padding:18px;border-radius:13px;background:var(--card);border:1px solid var(--line)}
+.sd h4{font-size:15px;display:flex;align-items:center;gap:9px}
+.sd .sdl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.sd.sup .sdl{color:var(--lime)}
+.sd.dem .sdl{color:var(--blue)}
+.sd.spt .sdl{color:var(--violet)}
+.sd p{font-size:12.5px;color:var(--mut);margin-top:7px}
+.comeback{margin-top:22px;padding:20px 24px;border-radius:14px;background:rgba(212,236,142,.09);border:1px solid rgba(212,236,142,.3);text-align:center}
+.comeback .q{font-size:clamp(18px,2.4vw,24px);font-weight:700;color:var(--ink)}
+.comeback .q em{color:var(--lime);font-style:normal}
+.comeback p{font-size:13px;color:var(--mut);margin-top:8px}
+
+/* CATALOG */
+.filters{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:26px}
+.fbtn{font-size:12.5px;font-weight:600;padding:8px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--mut);cursor:pointer;transition:.15s;font-family:inherit}
+.fbtn:hover{color:var(--ink);border-color:var(--line-2)}
+.fbtn.on{background:var(--lime);color:var(--teal);border-color:var(--lime);font-weight:700}
+.cat-grid{display:grid;gap:12px}
+@media(min-width:680px){.cat-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.cat-grid{grid-template-columns:1fr 1fr 1fr}}
+.course{padding:16px 18px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;gap:9px;transition:.15s}
+.course:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.course .ct{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.course h4{font-size:14px;line-height:1.3}
+.course .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px;color:var(--mut)}
+.course .src-b{font-family:var(--mono);font-size:10.5px;color:var(--mint);padding:2px 7px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.hidden{display:none!important}
+.count{font-size:12.5px;color:var(--mut);margin-bottom:18px}
+
+/* FOOTER */
+footer{padding:50px 0;border-top:1px solid var(--line);background:#06161f}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;align-items:center}
+.foot .l{font-size:13px;color:var(--mut)}
+.foot .r{display:flex;gap:10px;flex-wrap:wrap}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px;font-size:12px;color:var(--mut)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+html.js .reveal{opacity:0;transform:translateY(16px);transition:.6s ease}
+html.js .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="glow a"></div><div class="glow b"></div>
+  <div class="wrap">
+    <nav class="nav">
+      <div class="brand"><span class="mk">F</span> FDE Journey</div>
+      <div class="nav-links">
+        <a href="#anchors">The bar</a>
+        <a href="#credly">The badge</a>
+        <a href="#domains">Competencies</a>
+        <a href="#hve">HVE Core</a>
+        <a href="#catalog">Catalog</a>
+      </div>
+    </nav>
+    <div class="hero-grid">
+      <div>
+        <span class="pill"><span class="dot"></span> Learning journey · thinking tool</span>
+        <h1 style="margin-top:20px">Become a <span class="ac">Forward Deployed Engineer</span></h1>
+        <p class="sub">Two routes. One destination.</p>
+        <p class="lede">Walk into any client room, run discovery, build a working PoC, and land the business case — at frontier speed. A technical route and a functional route, held to the same bar, proven by the same badge.</p>
+        <div class="hero-chips">
+          <span class="pill"><span class="dot"></span> 2 mandatory anchors</span>
+          <span class="pill"><span class="dot"></span> 6 competency domains</span>
+          <span class="pill"><span class="dot"></span> 1 Credly capstone</span>
+        </div>
+        <div class="cta-row">
+          <a href="#anchors" class="btn btn-primary">Start with the minimum bar →</a>
+          <a href="#credly" class="btn btn-ghost">See the badge we're pitching</a>
+        </div>
+      </div>
+      <div class="badge-stack">
+        <div class="badge-art">
+          <div class="ring"></div>
+          <div class="badge-core">
+            <div class="em">🛡️</div>
+            <div class="t">FDE Certified</div>
+            <div class="s">Frontier · Forged</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <span>⚠️</span>
+      <div><b>Honest framing:</b> this is a <b>thinking tool, not an official curriculum</b>. It mixes Microsoft's LevelUp <b>Frontier Transformation Engineer</b> path with Avanade's FDE reality. The technical route leans on the <b>FTE badge</b>; functional people likely route through a <b>Value Architect / Trust Architect</b> variant (names not yet official). The destination — an <b>Avanade FDE Certified Credly badge</b> — is the ask to management.</div>
+    </div>
+  </div>
+</header>
+
+<!-- ANCHORS -->
+<section class="s-navy" id="anchors">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">The minimum bar</span>
+      <h2 class="sec-title">Two anchors. Everything else deepens them.</h2>
+      <p class="sec-desc">Strip the journey to its core and two things are non-negotiable: the <b style="color:var(--lime)">FTE badge</b> (what you know) and <b style="color:var(--lime)">HVE Core</b> (how you build). Every other course, workshop, and credential on this page is <span class="tag t-rec" style="vertical-align:middle">Recommended</span> or <span class="tag t-info" style="vertical-align:middle">Informational</span> — valuable, but in service of these two.</p>
+    </div>
+    <div class="anchor-grid">
+      <div class="anchor reveal">
+        <div class="k"><span class="num">🎓</span>
+          <div><h3>Frontier Transformation Engineer</h3><div class="role">Anchor 1 · What you know</div></div>
+        </div>
+        <span class="minibar">Mandatory</span>
+        <p class="d">Microsoft's elite partner credential on LevelUp. A structured path — ~86 hours, 11 courses, 3 milestones — that proves you can deliver across Microsoft's most advanced AI domains and help build Frontier Firms.</p>
+        <ul>
+          <li><span class="ck">1</span><span><b>Certifications</b> — GH-300 GitHub Copilot · AI-103 (or AI-102) Develop AI apps & agents on Azure · AB-100 Agentic AI Business Solutions Architect</span></li>
+          <li><span class="ck">2</span><span><b>Project Ready + Assessments</b> — Microsoft IQ, Work IQ & Copilot, Agentic AI, Fabric IQ & Data Agents, Agent 365 (pass at 80%)</span></li>
+          <li><span class="ck">3</span><span><b>Frontier CoE & Hypervelocity Engineering</b> — AI CoE + the Hypervelocity Engineering Framework assessment</span></li>
+        </ul>
+        <div class="chipline">
+          <span class="chip">GH-300</span><span class="chip">AI-103</span><span class="chip">AB-100</span><span class="chip">~86 hrs</span><span class="chip">skillupwithlevelup.com/frontier</span>
+        </div>
+      </div>
+      <div class="anchor reveal">
+        <div class="k"><span class="num">⚙️</span>
+          <div><h3>HVE Core</h3><div class="role">Anchor 2 · How you build</div></div>
+        </div>
+        <span class="minibar">Mandatory</span>
+        <p class="d">Microsoft ISE's engineering operating model — the team that shipped 140+ AI solutions in two years. Not a framework you read; a way teams operate. Installed as VS Code extensions that put 30+ specialised agents into GitHub Copilot across the whole SDLC.</p>
+        <ul>
+          <li><span class="ck">▸</span><span><b>HVE Core — All</b> — every stable agent, prompt, instruction & skill</span></li>
+          <li><span class="ck">▸</span><span><b>HVE Learning</b> — katas, training labs & AI coaches to build fluency</span></li>
+          <li><span class="ck">▸</span><span><b>RPI lifecycle</b> — Research → Plan → Implement → Review, with durable artifacts on disk</span></li>
+        </ul>
+        <div class="chipline">
+          <span class="chip">ise-hve-essentials.hve-core-all</span>
+          <span class="chip">ise-hve-essentials.hve-learning</span>
+          <span class="chip">microsoft.github.io/hve-core</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREDLY DESTINATION -->
+<section class="s-teal" id="credly">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">The destination · the ask</span>
+      <h2 class="sec-title">An official "Avanade FDE Certified" badge</h2>
+      <p class="sec-desc">The outcome we pitch to management. When an FDE clears the bar and proves the competencies, it should mean something portable and verifiable — a <b style="color:var(--lime)">Credly digital badge</b>, on the same platform 25M+ professionals already use.</p>
+    </div>
+    <div class="credly">
+      <div class="credly-badge reveal">
+        <div class="inner">
+          <div>
+            <div class="em">🥷</div>
+            <div class="t">Avanade FDE Certified</div>
+            <div class="s">Issued via Credly</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <p style="font-size:15.5px;color:#e6f1ec">We don't need to invent the rails — <b style="color:var(--lime)">we already have them.</b> Avanade people are part of Accenture's <b>Reinvention with Agentic AI</b> faculty, trained through its <b>Train-the-Trainer</b> program and issued badges through <b>Credly</b>. That same issuing capability can mint an Avanade FDE credential.</p>
+        <div class="ask">
+          <div class="lbl">The management ask</div>
+          <p>Stand up an <b style="color:var(--lime)">"Avanade FDE Certified"</b> Credly badge as the capstone of this journey — using the Credly issuing capability the Reinvention train-the-trainer faculty already hold. Define the criteria (two anchors + competency proof), appoint an assessment board, and issue.</p>
+        </div>
+        <div class="proof-chips">
+          <span class="pc"><span class="d">✓</span> Reinvention with Agentic AI — Facilitator (Credly, Accenture)</span>
+          <span class="pc"><span class="d">✓</span> Train-the-Trainer faculty</span>
+          <span class="pc"><span class="d">✓</span> Claude Certified (Credly, Anthropic)</span>
+          <span class="pc"><span class="d">✓</span> MS Global Hackathon 2026 (Credly)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTES -->
+<section class="s-navy" id="routes">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">Two routes</span>
+      <h2 class="sec-title">Same bar. Same badge. Different start line.</h2>
+      <p class="sec-desc">The journey is more technical than functional by default. Technical people route through the FTE badge. Functional / advisory people likely route through a <b style="color:var(--lime)">Value Architect</b> or <b style="color:var(--lime)">Trust Architect</b> variant — same competency map, reframed entry points. Names aren't official yet.</p>
+    </div>
+    <div class="routes">
+      <div class="route tech reveal">
+        <div class="rh"><span class="ic">🛠️</span><div><h3>Frontier Transformation Engineer</h3><div class="rl">Technical / developer route</div></div></div>
+        <p>You already code. The route sharpens AI-native build fluency, agent frameworks, RPI discipline, and the Azure stack — then forces the facilitation and commercial half that technical people usually skip.</p>
+        <div class="dest">→ <span>Anchor: <b>FTE badge</b> · build-heavy competency weighting</span></div>
+      </div>
+      <div class="route func reveal">
+        <div class="rh"><span class="ic">🧭</span><div><h3>Value Architect / Trust Architect</h3><div class="rl">Functional / advisory route · provisional</div></div></div>
+        <p>You're strong on discovery, stakeholders and business framing. The route adds the model mechanics, prompt & context fluency, and enough hands-on build to be credible in the room — without becoming a full-stack developer.</p>
+        <div class="dest">→ <span>Anchor: <b>HVE literacy</b> + value framing · facilitation-heavy weighting</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPETENCY DOMAINS -->
+<section class="s-deep" id="domains">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">The spine</span>
+      <h2 class="sec-title">Six competency domains</h2>
+      <p class="sec-desc">This is the heart of the journey. For every domain: what excellence looks like (the same destination for both routes), where each route starts, what it must build, and <b style="color:var(--lime)">how you prove it — the test in the room</b>. Click any domain to open it.</p>
+    </div>
+    <div class="dom-list" id="domList"></div>
+  </div>
+</section>
+
+<!-- HVE ENGINE -->
+<section class="s-navy" id="hve">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">The engine</span>
+      <h2 class="sec-title">HVE Core — disciplined acceleration</h2>
+      <p class="sec-desc">"Just ask AI to write the code" breaks at scale: plausible ≠ verified, no durable state, security as an afterthought, no governance story. HVE Core is the answer — speed <em>with</em> accountability. Every agent produces validated, governance-aligned artifacts.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar reveal"><div class="em">👥</div><h4>Small, expert teams</h4><p>4–5 people with deep domain expertise instead of 8–10. Every person ships.</p></div>
+      <div class="pillar reveal"><div class="em">♻️</div><h4>Reusable accelerators</h4><p>Patterns, agents and prompts validated across 140+ shipped AI solutions.</p></div>
+      <div class="pillar reveal"><div class="em">🤖</div><h4>AI across the SDLC</h4><p>Agents embedded in research, planning, implementation and review — not just coding.</p></div>
+    </div>
+
+    <h3 style="font-size:18px;margin:10px 0 14px" class="reveal">The full HVE pattern — eight stages</h3>
+    <div class="clearnote reveal"><span>🔄</span> Each stage's output is the next stage's input. <b style="color:var(--lime)">&nbsp;/clear&nbsp;</b> between every stage — not optional.</div>
+    <div class="rpi-track reveal">
+      <div class="stage"><span class="n">01</span><h4>DT Coach</h4><p>Understand who you're building for. 9-method design-thinking framework.</p><span class="ph">→ empathy map · HMW</span></div>
+      <div class="stage"><span class="n">02</span><h4>BRD → PRD</h4><p>Business context → user stories + acceptance criteria.</p><span class="ph">→ prd-{slug}.md</span></div>
+      <div class="stage"><span class="n">03</span><h4>Security Planner</h4><p>6-phase STRIDE across 7 buckets. Flags AI/ML for RAI.</p><span class="ph">→ threat catalog</span></div>
+      <div class="stage"><span class="n">04</span><h4>RAI Planner</h4><p>NIST AI RMF · 7 trustworthiness characteristics.</p><span class="ph">→ RAI catalog</span></div>
+      <div class="stage impl"><span class="n">05</span><h4>Researcher</h4><p>Close evidence gaps — patterns, APIs, SDKs.</p><span class="ph">/rpi-research</span></div>
+      <div class="stage impl"><span class="n">06</span><h4>Planner</h4><p>Sequenced plan + critique gate: Pass / Revise / Blocked.</p><span class="ph">/rpi-plan</span></div>
+      <div class="stage impl"><span class="n">07</span><h4>Implementor</h4><p>Execute the plan exactly. phaseStop checkpoints.</p><span class="ph">/rpi-implement</span></div>
+      <div class="stage impl"><span class="n">08</span><h4>Reviewer</h4><p>Implementation vs plan. Execution status ≠ outcome.</p><span class="ph">/rpi-review</span></div>
+    </div>
+
+    <table class="vs-table reveal">
+      <thead><tr><th>Dimension</th><th>Traditional</th><th>HVE</th></tr></thead>
+      <tbody>
+        <tr><td>Planning</td><td>Manual, weeks of docs</td><td class="hve">BRD/PRD agents in hours</td></tr>
+        <tr><td>Research</td><td>Ad-hoc Googling</td><td class="hve">Structured RPI researcher lanes</td></tr>
+        <tr><td>Code review</td><td>Manual PR review</td><td class="hve">Multi-perspective agent review</td></tr>
+        <tr><td>Security</td><td>Post-build pen tests</td><td class="hve">Security Planner baked into the sprint</td></tr>
+        <tr><td>Delivery speed</td><td>Months</td><td class="hve">Weeks — with guardrails</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:18px;margin:34px 0 4px" class="reveal">Four milestones to fluency</h3>
+    <p class="sec-desc reveal" style="margin-bottom:4px">The HVE Learning path — from install to autonomous engineering.</p>
+    <div class="fluency">
+      <div class="fl reveal"><div class="ms">MILESTONE 1</div><h4>Setup & Exploration</h4><p>Install HVE Core All, run your first command, learn what got installed.</p></div>
+      <div class="fl reveal"><div class="ms">MILESTONE 2</div><h4>Guided Workflow</h4><p>Run an RPI loop with the coach. Katas and training labs build the reflexes.</p></div>
+      <div class="fl reveal"><div class="ms">MILESTONE 3</div><h4>Independent Workflow</h4><p>Drive the full eight-stage pattern on a real brief without hand-holding.</p></div>
+      <div class="fl reveal"><div class="ms">MILESTONE 4</div><h4>Autonomous Engineering</h4><p>Orchestrate agents, subagents and governance at speed. Ship weekly.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- HACKATHON -->
+<section class="s-teal" id="hackathon">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">The proof point · Redmond</span>
+      <h2 class="sec-title">Three days. Three FDE pods. Three working AI builds.</h2>
+      <p class="sec-desc">The Microsoft FDE Hackathon in Redmond put Microsoft, Accenture and Avanade in one room around real problems with a clear build bias. It validated the market is ready for a formal FDE operating model — and exposed the structure we need to scale it.</p>
+    </div>
+    <div class="hack-grid">
+      <div class="hack-main reveal">
+        <div class="big">Don't let it die at the demo.</div>
+        <p>The hackathon is the proof point. The real opportunity is turning what happened in Redmond into a <b style="color:var(--lime)">repeatable FDE operating model</b> — framed across three layers. The hackathon sits exactly at their intersection: it activated supply, created proof for demand, and exposed the support structures we need to scale.</p>
+        <div class="comeback">
+          <div class="q">Shift the invitation from <em>"look what we built"</em> to <em>"come build with us."</em></div>
+          <p>Train-the-trainer. Regional FDE factories. A community rhythm that turns hackathon energy into client-ready capability.</p>
+        </div>
+      </div>
+      <div class="sds">
+        <div class="sd sup reveal"><h4><span class="sdl">Supply</span></h4><p>The people side — FDEs, future FDEs, pods, trainers, regional hubs, and the job family: JDs, KPIs, certifications, assessment boards, career paths.</p></div>
+        <div class="sd dem reveal"><h4><span class="sdl">Demand</span></h4><p>The commercial side — sellers, accounts, PoC-on-the-Fly, demo-first selling, Frontier Studio / CAIO / AI Leads, and pipeline visibility.</p></div>
+        <div class="sd spt reveal"><h4><span class="sdl">Support</span></h4><p>The enablement side — <b style="color:var(--lime)">HVE Core</b>, reusable assets, Demo Worlds, sandboxes, training content, governance and quality loops.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<section class="s-deep" id="catalog">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="eyebrow">The catalog</span>
+      <h2 class="sec-title">Courses, tiered honestly</h2>
+      <p class="sec-desc">Everything that feeds the journey, drawn from the FDE training review. Filter by tier or source. The two anchors are <span class="tag t-must" style="vertical-align:middle">Mandatory</span>; the rest deepens them.</p>
+    </div>
+    <div class="filters" id="filters">
+      <button class="fbtn on" data-f="all">All</button>
+      <button class="fbtn" data-f="must">Mandatory</button>
+      <button class="fbtn" data-f="rec">Recommended</button>
+      <button class="fbtn" data-f="info">Informational</button>
+    </div>
+    <div class="count" id="count"></div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--lime)"></span> Mandatory — the minimum bar</span>
+      <span><span class="sw" style="background:var(--blue)"></span> Recommended — deepens a competency</span>
+      <span><span class="sw" style="background:#7f9a96"></span> Informational — context / awareness</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="l"><b style="color:var(--ink)">The FDE Journey</b> — a thinking tool, not an official curriculum.<br>Built from the FDE training review, LevelUp Frontier, HVE Core & the Redmond hackathon.</div>
+      <div class="r">
+        <span class="pill"><span class="dot"></span> FTE badge</span>
+        <span class="pill"><span class="dot"></span> HVE Core</span>
+        <span class="pill"><span class="dot"></span> Avanade FDE Certified</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------- DATA: 6 competency domains (from the FDE Excellence Map) ---------- */
+const DOMAINS = [
+  { n:"1", title:"Agentic AI Fundamentals", sub:"What every FDE must explain at a whiteboard", prio:"P1",
+    dest:"Explain to any client, in plain English, what an LLM is, why it hallucinates, what the context window means, and how 'agentic' differs from 'chatbot'. Describe the four design patterns — reflection, tool use, planning, multi-agent — with a real example of each.",
+    func:{st:"Strong at explaining complex ideas; knows the business case but not the model mechanics.", bu:"AI Capabilities & Limitations · Agentic AI Unplugged · first lessons of Agentic AI Fluency."},
+    tech:{st:"Understands the mechanics but frames in developer terms a client can't follow.", bu:"Reframe every technical explanation as a business outcome. Drill the jargon-free whiteboard explanation."},
+    proof:"Explain to a sceptical 'client' (played by a colleague) what an agent is and when you would and wouldn't use one. They must repeat it back in their own words.",
+    src:["Agentic AI Unplugged","Agentic AI Fluency","AI Capabilities & Limitations","Claude 101"] },
+
+  { n:"2", title:"Technical Build Capability", sub:"What every FDE must ship in a client room", prio:"P1",
+    dest:"Use GitHub Copilot and Claude Code fluently under time pressure. Scaffold a PoC from a brief in under 30 minutes. Run Explore → Plan → Code → Commit without thinking. Build tool-use agents, RAG on Azure AI Search, and multi-agent systems in MAF or Python.",
+    func:{st:"May have limited coding experience; build basic fluency before tool fluency makes sense.", bu:"Claude Code 101 · GHCP hands-on labs · 3 small end-to-end PoCs before Activation Day."},
+    tech:{st:"Already codes; may build by instinct rather than the structured loop.", bu:"Enforce the RPI loop on every build. Target a 25-minute PoC scaffold from brief to running app."},
+    proof:"Timed build drill: from a one-paragraph brief, produce a running, deployed application in 45 minutes using GHCP or Claude Code.",
+    src:["Claude Code 101","Building Agents","Build AI Apps & Agents with Azure","MAF deep-dive","Activation Day"] },
+
+  { n:"3", title:"Facilitation & Discovery", sub:"The half of the role training barely covers", prio:"P1",
+    dest:"Run a 2-hour LUMA discovery session that ends with a scoped, buildable PoC brief. Surface use cases from vague asks (Statement Starters), pressure-test direction (Assumptions Grid), prioritise (Importance/Difficulty Matrix). Explain any AI concept to an exec in under 3 minutes.",
+    func:{st:"Strong facilitation instinct from consulting; needs the LUMA toolkit to systematise it.", bu:"LUMA fundamentals certification · design a standard FDE discovery workshop template · run it twice internally."},
+    tech:{st:"Has workshop experience but jumps to solution; discovery feels uncomfortable.", bu:"Deliberately slow down. Run a LUMA session where you may not propose a technical solution until the final 15 minutes."},
+    proof:"Facilitate a live 90-minute discovery with colleagues playing clients who 'just want AI'. End with a brief another FDE can build from without a clarifying question.",
+    src:["LUMA System","LUMA AI discovery template","Design Thinking for AI","4D Framework","Teaching AI Fluency"] },
+
+  { n:"4", title:"Squad Discipline", sub:"The operating system that makes everything reliable", prio:"P1",
+    dest:"Blueprint before build (even a 20-min plan). Red-team before build (15-min structured challenge). Quality-gate before demo (browser-tested end-to-end). Write game tape after every build. Never demo an untested page. Never skip the governance that cannot be skipped.",
+    func:{st:"Strong at specs and reviews; may over-document — the time-box is the discipline.", bu:"Blueprint drills · receive a red-team without defending · log decisions · write 3-sentence game tape per build."},
+    tech:{st:"Jumps straight to code; blueprint and red-team feel like overhead.", bu:"Resist the instinct — the pivot cost of building the wrong thing beats the 20 minutes. Make RPI + review a habit."},
+    proof:"Produce a 20-minute blueprint for an unseen brief; hand it to another FDE who builds from it with zero questions. Then run a red-team that finds 2 blockers.",
+    src:["HVE RPI lifecycle","Squad blueprint pattern","Red-team checklist","Vera browser checklist","Coach game-tape"] },
+
+  { n:"5", title:"Commercial & Presales", sub:"The FDE role is a sales accelerator", prio:"P1",
+    dest:"Frame any working PoC as a business case in under 5 minutes: problem (30s) → live demo (3m) → three business metrics (1m) → one ask (30s). Navigate the progression from workshop → PoC → Avanade engagement. Always disclose GA vs preview status.",
+    func:{st:"Natural strength — business case, exec presence, commercial awareness. Apply it to AI PoCs.", bu:"PoC-to-Business-Case framing · 3 metric templates for common verticals · demo with no slides."},
+    tech:{st:"Can build it; demos features not outcomes. The CFO 'so what?' catches you off guard.", bu:"Practise the 5-minute format with a functional colleague. Record yourself and watch it back."},
+    proof:"5-minute demo to a non-technical 'CFO': problem → live demo → 3 business metrics → one ask. They must ask an informed ROI follow-up.",
+    src:["PoC-to-Business-Case","FDE Presales Motion","Live Demo Under Pressure","GA-vs-preview discipline"] },
+
+  { n:"6", title:"Tools & Daily Practice", sub:"The edge compounds daily", prio:"P1",
+    dest:"GitHub Copilot and Claude Code as primary build tools, with a working CLAUDE.md on every project. A forked squad setup adapted to your domain. A personal daily-practice habit — 20 minutes, one new technique, logged — sustained for 30+ days.",
+    func:{st:"Discipline and habit-building are natural; the risk is logging practice without applying it.", bu:"Daily practice log · one new prompt technique per day for two weeks · review weekly."},
+    tech:{st:"Comfortable in the terminal; may use the tools as a faster chatbot, not a workflow.", bu:"Enforce Explore → Plan on every build. Add subagents. Publish one skill. Measure the acceleration."},
+    proof:"Show your 30-day practice log and your forked squad config. Identify 3 capability gains that came from practice, and demonstrate one live.",
+    src:["GitHub Copilot labs","Claude Code 101","Agent Skills (skills.sh)","HVE Learning katas","Personal patterns log"] },
+];
+
+/* ---------- DATA: course catalog (from the FDE training review sheets) ---------- */
+const COURSES = [
+  // Mandatory anchors
+  {t:"Frontier Transformation Engineer badge", tier:"must", src:"LevelUp", meta:"~86 hrs · 3 milestones"},
+  {t:"HVE Core — All (VS Code)", tier:"must", src:"HVE", meta:"ise-hve-essentials.hve-core-all"},
+  {t:"HVE Learning Platform (VS Code)", tier:"must", src:"HVE", meta:"ise-hve-essentials.hve-learning"},
+  {t:"GH-300: GitHub Copilot", tier:"must", src:"Cert", meta:"10 hrs · credential"},
+  {t:"AI-103: Develop AI apps & agents on Azure", tier:"must", src:"Cert", meta:"10 hrs · AI-102 accepted"},
+  {t:"AB-100: Agentic AI Business Solutions Architect", tier:"must", src:"Cert", meta:"10 hrs · credential"},
+  {t:"Hypervelocity Engineering Framework", tier:"must", src:"LevelUp", meta:"1.5 hrs · required assessment"},
+  {t:"Agentic AI Fluency", tier:"must", src:"Core", meta:"6 hrs · top priority"},
+  {t:"Build AI Apps & Agents with Azure", tier:"must", src:"MSFT", meta:"12 hrs · anchor course"},
+  {t:"Develop AI Agents on Azure", tier:"must", src:"MSFT", meta:"8 hrs · Foundry Agent Service"},
+  {t:"Claude 101 + Prompt Engineering", tier:"must", src:"Anthropic", meta:"start here · free · certified"},
+  {t:"Claude Code 101 + Tool Use", tier:"must", src:"Anthropic", meta:"before Activation Day"},
+
+  // Recommended
+  {t:"Microsoft Generative AI for Beginners (selective)", tier:"rec", src:"Core", meta:"keep eps 1–5,12,13,15"},
+  {t:"Building Agents", tier:"rec", src:"Core", meta:"12 hrs · technical track"},
+  {t:"Multi-Agent Systems (+ MAF track)", tier:"rec", src:"Core", meta:"15 hrs · add MAF"},
+  {t:"Context Engineering — Deep Dive", tier:"rec", src:"Core", meta:"expand to 2+ hrs · critical"},
+  {t:"Copilot Studio: Autonomous Agents", tier:"rec", src:"MSFT", meta:"3 hrs · low-code path"},
+  {t:"MCP + Subagents", tier:"rec", src:"Anthropic", meta:"connectivity + scale"},
+  {t:"Microsoft Agent Framework (C#/.NET)", tier:"rec", src:"Gap", meta:"8–12 hrs · Avanade stack"},
+  {t:"LLM Evaluation — RAGAS, LLM-as-Judge", tier:"rec", src:"Gap", meta:"differentiator"},
+  {t:"LUMA System — Fundamentals", tier:"rec", src:"Facilitation", meta:"certify · run the room"},
+  {t:"Design Thinking for AI — Applied Sprint", tier:"rec", src:"Facilitation", meta:"half-day workshop"},
+  {t:"Build Along with a Squad (Superteam)", tier:"rec", src:"Build lab", meta:"capstone build lab"},
+  {t:"PoC-to-Business-Case Framing", tier:"rec", src:"Commercial", meta:"one slide · three numbers · one ask"},
+  {t:"Live Demo Delivery Under Pressure", tier:"rec", src:"Commercial", meta:"practise repeatedly"},
+  {t:"Responsible AI Impact Assessment", tier:"rec", src:"Governance", meta:"before any client-facing AI"},
+  {t:"Microsoft Copilot Family Deep Dive", tier:"rec", src:"MSFT", meta:"which Copilot? in 60 sec"},
+  {t:"Microsoft Phi — SLMs for PoCs", tier:"rec", src:"MSFT", meta:"cost / data-residency scenarios"},
+  {t:"4D AI Fluency Framework", tier:"rec", src:"Anthropic", meta:"client-room asset"},
+  {t:"AI Capabilities & Limitations", tier:"rec", src:"Anthropic", meta:"honest AI literacy"},
+  {t:"Claude Cowork", tier:"rec", src:"Anthropic", meta:"non-technical client users"},
+
+  // Informational
+  {t:"Security, Compliance & Governance for AI (AWS)", tier:"info", src:"Core", meta:"Azure sections only"},
+  {t:"Data Narrative 101 / 201", tier:"info", src:"Core", meta:"advisory context"},
+  {t:"Claude with AWS Bedrock", tier:"info", src:"Anthropic", meta:"awareness · non-Avanade"},
+  {t:"Claude with Google Vertex AI", tier:"info", src:"Anthropic", meta:"awareness · non-Avanade"},
+  {t:"Intro to AI & ML", tier:"info", src:"Core", meta:"cut · gated by pre-assessment"},
+  {t:"Cloud Computing & MLOps", tier:"info", src:"Core", meta:"managed-services discipline"},
+];
+
+/* ---------- RENDER: domains ---------- */
+const domList = document.getElementById('domList');
+DOMAINS.forEach((d,i)=>{
+  const el = document.createElement('div');
+  el.className='dom reveal';
+  const srcHtml = d.src.map(s=>'<span class="src">'+s+'</span>').join('');
+  el.innerHTML =
+    '<div class="dom-head">'+
+      '<div class="dom-n">'+d.n+'</div>'+
+      '<div class="dom-ti"><h3>'+d.title+'</h3><p>'+d.sub+'</p></div>'+
+      '<div class="dom-meta"><span class="tag t-p1">'+d.prio+'</span><span class="chev">▼</span></div>'+
+    '</div>'+
+    '<div class="dom-body">'+
+      '<div class="dom-dest"><b>The destination — same for both routes.</b> '+d.dest+'</div>'+
+      '<div class="split">'+
+        '<div class="lane func"><div class="lh">🧭 Functional route</div><div class="st">Starts: '+d.func.st+'</div><p>'+d.func.bu+'</p></div>'+
+        '<div class="lane tech"><div class="lh">🛠️ Technical route</div><div class="st">Starts: '+d.tech.st+'</div><p>'+d.tech.bu+'</p></div>'+
+      '</div>'+
+      '<div class="dom-proof"><div class="lh">🎯 How you prove it — the test in the room</div><p>'+d.proof+'</p></div>'+
+      '<div class="dom-src">'+srcHtml+'</div>'+
+    '</div>';
+  domList.appendChild(el);
+  el.querySelector('.dom-head').addEventListener('click', ()=>{
+    el.classList.toggle('open');
+  });
+});
+
+/* ---------- RENDER: catalog ---------- */
+const catGrid = document.getElementById('catGrid');
+const countEl = document.getElementById('count');
+const tierTag = {must:'<span class="tag t-must">Mandatory</span>', rec:'<span class="tag t-rec">Recommended</span>', info:'<span class="tag t-info">Info</span>'};
+function renderCourses(filter){
+  catGrid.innerHTML='';
+  let shown=0;
+  COURSES.forEach(c=>{
+    if(filter!=='all' && c.tier!==filter) return;
+    shown++;
+    const el=document.createElement('div');
+    el.className='course';
+    el.innerHTML='<div class="ct"><h4>'+c.t+'</h4>'+tierTag[c.tier]+'</div>'+
+      '<div class="meta"><span class="src-b">'+c.src+'</span><span>'+c.meta+'</span></div>';
+    catGrid.appendChild(el);
+  });
+  countEl.textContent = shown+' course'+(shown===1?'':'s')+' shown';
+}
+renderCourses('all');
+document.querySelectorAll('.fbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    renderCourses(b.dataset.f);
+  });
+});
+
+/* ---------- reveal on scroll (progressive enhancement; content visible without JS) ---------- */
+document.documentElement.classList.add('js');
+const revealEls = document.querySelectorAll('.reveal');
+if('IntersectionObserver' in window){
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.08, rootMargin:'0px 0px -40px 0px'});
+  revealEls.forEach(el=>io.observe(el));
+  /* safety net: never leave content hidden */
+  setTimeout(()=>revealEls.forEach(el=>el.classList.add('in')), 3000);
+} else {
+  revealEls.forEach(el=>el.classList.add('in'));
+}
+</script>
+</body>
+</html>
